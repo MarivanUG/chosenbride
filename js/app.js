@@ -220,8 +220,28 @@
   function wireShellButtons(){
     const sidebar = $('#sidebar');
     const menuBtn = $('#menuBtn');
+    
     if(menuBtn && sidebar){
-      menuBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+      // Create backdrop if not exists
+      let backdrop = $('.sidebar-backdrop');
+      if(!backdrop){
+        backdrop = document.createElement('div');
+        backdrop.className = 'sidebar-backdrop';
+        document.body.appendChild(backdrop);
+      }
+
+      const toggle = ()=>{
+        const isOpen = sidebar.classList.toggle('open');
+        backdrop.classList.toggle('open', isOpen);
+      };
+
+      const close = ()=>{
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('open');
+      };
+
+      menuBtn.addEventListener('click', toggle);
+      backdrop.addEventListener('click', close);
     }
 
     const logoutBtn = $('#logoutBtn');

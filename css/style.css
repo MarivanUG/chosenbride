@@ -134,11 +134,19 @@ a:hover{text-decoration:underline}
     position:fixed;
     left:-290px;
     width:270px;
-    z-index:10;
+    z-index:20;
     transition:left .2s ease;
   }
   .sidebar.open{left:0}
   .content{padding:14px}
+  
+  .sidebar-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:15;
+    opacity:0; pointer-events:none; transition:opacity .2s;
+  }
+  .sidebar-backdrop.open{opacity:1; pointer-events:auto}
+  
+  .nav-link{padding:12px 14px} /* larger touch target */
 }
 
 .card{
