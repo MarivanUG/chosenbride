@@ -195,6 +195,7 @@ a:hover{text-decoration:underline}
   background:var(--surface);
   color:var(--text);
   outline:none;
+  font-size:16px; /* prevent iOS zoom */
 }
 .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(11,61,145,.45); box-shadow:0 0 0 3px rgba(11,61,145,.14)}
 .help{color:var(--danger); font-size:.85rem; min-height:1.1em}

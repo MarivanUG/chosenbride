@@ -44,8 +44,10 @@ To enable real-time synchronization where data appears instantly on all devices,
 10. Copy that configuration.
 
 ### Applying the Config
-1.  Create a new file `js/firebase-config.js` in your project.
-2.  Paste the configuration code there.
-3.  Uncomment the Firebase scripts in `index.html` (and other HTML files).
-4.  The system is designed to detect this config and switch to Cloud Mode.
-    *(Note: This requires code modifications to `js/storage.js` to implement the Firebase adapter, which is currently a placeholder.)*
+1.  **Done:** The file `js/firebase-config.js` has been created with your configuration.
+2.  **Next Steps:**
+    *   This file uses ES Modules. To use it, you must switch your application to support modules or use a bundler.
+    *   Alternatively, for a quick start, reference the CDN scripts in your HTML.
+    *   **Code Update Required:** The file `js/storage.js` currently uses `localStorage`. It must be rewritten to read/write from `window.firebaseCtx.db` (Firestore) instead.
+
+3.  The system is designed to detect this config... (Future Implementation)
