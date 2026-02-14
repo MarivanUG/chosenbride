@@ -354,6 +354,14 @@
       return;
     }
 
+    $('#loginHelpBtn')?.addEventListener('click', ()=>{
+      confirmModal({
+        title: 'Why is my data missing?',
+        message: 'This app saves data on your device (Local Storage), not on the internet.\n\nIf you added data on your PC, it will not appear on your Phone automatically.\n\nTo Sync:\n1. On PC: Go to Settings > Data Sync > Export.\n2. Send the file to your Phone.\n3. On Phone: Go to Settings > Data Sync > Import.',
+        confirmText: 'Understood'
+      });
+    });
+
     const form = $('#loginForm');
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();

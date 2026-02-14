@@ -20,10 +20,12 @@ A **production-ready static web app** for church treasurers, built with **HTML +
 
 After login, go to **Settings → Security** to change the password.
 
-## Data Storage
+## Data Storage (Important)
 
-- This system uses **LocalStorage** in the browser for persistence.
-- Data stays on the same browser/device unless you **export a backup**.
+- This system uses **LocalStorage** in the browser.
+- **Data stays on the device you create it on.**
+- **Desktop and Mobile do NOT sync automatically.**
+- To move data (and updated passwords) from Desktop to Mobile, you must use **Backup & Restore** in Settings.
 
 ## Currency
 
