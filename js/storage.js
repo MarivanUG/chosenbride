@@ -16,7 +16,9 @@
       currencyLocale: 'en-UG',
       darkMode: false,
       idleLogoutMinutes: 10,
-      financialYearStartMonth: 1 // 1=Jan
+      financialYearStartMonth: 1, // 1=Jan
+      openingCash: 0,
+      openingBank: 0
     },
     categories: {
       income: [
@@ -33,6 +35,7 @@
     incomes: [],
     expenses: [],
     payouts: [],
+    transfers: [], // { id, date, type:'deposit'|'withdrawal', amount, notes, recordedBy }
     budgets: {
       // monthKey: { "Utilities": 100, ... }
     },

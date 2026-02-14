@@ -267,6 +267,49 @@
     return out;
   }
 
+  function getBalances(){
+    const state = CBTStorage.getState();
+    let cash = Number(state.settings?.openingCash || 0);
+    let bank = Number(state.settings?.openingBank || 0);
+
+    // Incomes
+    for(const r of (state.incomes || [])){
+      const amt = Number(r.amount || 0);
+      if(r.method === 'Cash') cash += amt;
+      else bank += amt; // Mobile Money, Bank Transfer -> Bank
+    }
+
+    // Expenses
+    for(const r of (state.expenses || [])){
+      const amt = Number(r.amount || 0);
+      if(r.method === 'Cash') cash -= amt;
+      else bank -= amt;
+    }
+
+    // Payouts
+    for(const r of (state.payouts || [])){
+      const amt = Number(r.amount || 0);
+      if(r.method === 'Cash') cash -= amt;
+      else bank -= amt;
+    }
+
+    // Transfers
+    for(const r of (state.transfers || [])){
+      const amt = Number(r.amount || 0);
+      if(r.type === 'deposit'){
+        // Cash -> Bank
+        cash -= amt;
+        bank += amt;
+      } else if(r.type === 'withdrawal'){
+        // Bank -> Cash
+        bank -= amt;
+        cash += amt;
+      }
+    }
+
+    return { cash, bank };
+  }
+
   // ---------- Page controllers ----------
 
   async function initIndex(){
@@ -332,6 +375,32 @@
     CBTAuth.startActivityWatch();
     applyDarkModeFromSettings();
     wireShellButtons();
+
+    // Show balances
+    const balances = getBalances();
+    const grid = $('.grid.cards-3');
+    if(grid){
+      let balanceRow = $('#balanceRow');
+      if(!balanceRow){
+        balanceRow = document.createElement('section');
+        balanceRow.id = 'balanceRow';
+        balanceRow.className = 'grid cards-2';
+        balanceRow.style.marginBottom = '14px';
+        balanceRow.innerHTML = `
+          <div class="card" style="background:var(--surface-2)">
+            <div class="card-label">Cash at Hand</div>
+            <div class="card-value" id="cashBalance">…</div>
+          </div>
+          <div class="card" style="background:var(--surface-2)">
+            <div class="card-label">Cash at Bank</div>
+            <div class="card-value" id="bankBalance">…</div>
+          </div>
+        `;
+        grid.before(balanceRow);
+      }
+      $('#cashBalance').textContent = formatMoney(balances.cash);
+      $('#bankBalance').textContent = formatMoney(balances.bank);
+    }
 
     let activeRange = rangePreset('month');
     const customWrap = $('#customRange');
@@ -448,6 +517,92 @@
     }
 
     render();
+  }
+
+  function initBanking(){
+    const user = CBTAuth.requireAuth();
+    if(!user) return;
+    CBTAuth.startActivityWatch();
+    applyDarkModeFromSettings();
+    wireShellButtons();
+
+    $('#transferDate').value = todayISO();
+
+    function renderBalances(){
+      const bal = getBalances();
+      $('#cashBalance').textContent = formatMoney(bal.cash);
+      $('#bankBalance').textContent = formatMoney(bal.bank);
+    }
+
+    function renderTransfers(){
+      const state = CBTStorage.getState();
+      const rows = (state.transfers || []).sort((a,b)=>b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+
+      renderTable($('#transferTable'),
+        [
+          { key:'date', label:'Date', render:(r)=>escapeHtml(r.date) },
+          { key:'type', label:'Type', render:(r)=> r.type === 'deposit' ? 'Cash to Bank' : 'Bank to Cash' },
+          { key:'amount', label:'Amount', render:(r)=>`<strong>${escapeHtml(formatMoney(r.amount))}</strong>` },
+          { key:'notes', label:'Notes', render:(r)=>escapeHtml(r.notes||'') },
+          { key:'recordedBy', label:'By', render:(r)=>escapeHtml(r.recordedBy) }
+        ],
+        rows,
+        async (action, id)=>{
+          if(action === 'delete'){
+            const ok = await confirmModal({ title:'Delete Transfer', message:'Are you sure? This will revert the balance change.', confirmText:'Delete', danger:true });
+            if(!ok) return;
+            CBTStorage.update((s)=>{ s.transfers = s.transfers.filter(t=>t.id!==id); return s; });
+            CBTStorage.pushAudit('transfer_delete', { id }, user.username);
+            renderTransfers();
+            renderBalances();
+            toast('Deleted', 'Transfer record removed.');
+          }
+        }
+      );
+    }
+
+    $('#bankingForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      clearAllHelps($('#bankingForm'));
+
+      const type = $('#transferType').value;
+      const amount = parseMoney($('#transferAmount').value);
+      const date = $('#transferDate').value;
+      const notes = $('#transferNotes').value.trim();
+
+      let ok = true;
+      if(!type){ setHelp('transferType','Select transfer type.'); ok=false; }
+      if(amount <= 0){ setHelp('transferAmount','Amount must be greater than 0.'); ok=false; }
+      if(!date){ setHelp('transferDate','Date is required.'); ok=false; }
+
+      if(!ok) return;
+
+      const record = {
+        id: CBTStorage.makeId('TRF'),
+        date,
+        type,
+        amount,
+        notes,
+        recordedBy: user.username,
+        createdAt: new Date().toISOString()
+      };
+
+      CBTStorage.update((s)=>{
+        s.transfers = s.transfers || [];
+        s.transfers.unshift(record);
+        return s;
+      });
+
+      CBTStorage.pushAudit('transfer_create', { type, amount }, user.username);
+      toast('Success', 'Transfer recorded.');
+      $('#bankingForm').reset();
+      $('#transferDate').value = todayISO();
+      renderTransfers();
+      renderBalances();
+    });
+
+    renderBalances();
+    renderTransfers();
   }
 
   function initIncome(){
@@ -1369,6 +1524,10 @@
     const state = CBTStorage.getState();
     $('#idleMinutes').value = String(state.settings?.idleLogoutMinutes ?? 10);
 
+    // Opening balances
+    $('#openingCash').value = String(state.settings?.openingCash || 0);
+    $('#openingBank').value = String(state.settings?.openingBank || 0);
+
     $('#timeoutForm').addEventListener('submit', (e)=>{
       e.preventDefault();
       const mins = Number($('#idleMinutes').value);
@@ -1382,6 +1541,19 @@
       });
       CBTStorage.pushAudit('settings_update', { idleLogoutMinutes: mins }, user.username);
       toast('Saved', 'Inactivity timeout updated.');
+    });
+
+    $('#balanceForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const cash = Number($('#openingCash').value);
+      const bank = Number($('#openingBank').value);
+      CBTStorage.update((s)=>{
+        s.settings.openingCash = cash;
+        s.settings.openingBank = bank;
+        return s;
+      });
+      CBTStorage.pushAudit('balance_update', { cash, bank }, user.username);
+      toast('Saved', 'Opening balances updated.');
     });
 
     // Change password
@@ -1582,7 +1754,8 @@
       expenses: initExpenses,
       payouts: initPayouts,
       reports: initReports,
-      settings: initSettings
+      settings: initSettings,
+      banking: initBanking
     };
 
     const fn = routes[page];
@@ -1592,6 +1765,7 @@
   // Expose minimal helpers for debugging
   window.CBTApp = {
     formatMoney,
-    toast
+    toast,
+    getBalances
   };
 })();

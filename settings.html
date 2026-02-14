@@ -25,6 +25,7 @@
         <a class="nav-link" href="income.html">Income</a>
         <a class="nav-link" href="expenses.html">Expenses</a>
         <a class="nav-link" href="payouts.html">Payouts</a>
+        <a class="nav-link" href="banking.html">Banking</a>
         <a class="nav-link" href="reports.html">Reports</a>
         <a class="nav-link active" href="settings.html">Settings</a>
       </nav>
@@ -43,6 +44,24 @@
     </header>
 
     <main class="content">
+      <section class="card stack" style="margin-bottom: 14px">
+        <h2 class="h3">Opening Balances</h2>
+        <div class="muted small">Set the starting amount for your accounts (Manual Update).</div>
+        <form id="balanceForm" class="grid form-2">
+          <div class="field">
+            <label for="openingCash">Cash at Hand</label>
+            <input id="openingCash" type="number" inputmode="decimal" min="0" step="0.01" value="0" />
+          </div>
+          <div class="field">
+            <label for="openingBank">Cash at Bank</label>
+            <input id="openingBank" type="number" inputmode="decimal" min="0" step="0.01" value="0" />
+          </div>
+          <div class="row" style="grid-column: 1/-1">
+            <button class="btn primary" type="submit">Update Balances</button>
+          </div>
+        </form>
+      </section>
+
       <section class="grid cards-2">
         <div class="card">
           <div class="card-header">

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Banking — CBT Finance</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="banking">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
+          <div>
+            <div class="sidebar-title">Chosen Bride</div>
+            <div class="sidebar-subtitle">Finance System</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="income.html">Income</a>
+        <a class="nav-link" href="expenses.html">Expenses</a>
+        <a class="nav-link" href="payouts.html">Payouts</a>
+        <a class="nav-link active" href="banking.html">Banking</a>
+        <a class="nav-link" href="reports.html">Reports</a>
+        <a class="nav-link" href="settings.html">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn subtle" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+      <div class="topbar-title">Banking & Transfers</div>
+      <div class="topbar-actions">
+        <button class="btn subtle" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="grid cards-2" style="margin-bottom: 14px">
+        <div class="card" style="background:var(--surface-2)">
+          <div class="card-label">Cash at Hand</div>
+          <div class="card-value" id="cashBalance">…</div>
+        </div>
+        <div class="card" style="background:var(--surface-2)">
+          <div class="card-label">Cash at Bank</div>
+          <div class="card-value" id="bankBalance">…</div>
+        </div>
+      </section>
+
+      <section class="grid cards-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Record Transfer</h2>
+            <div class="muted small">Move money between accounts</div>
+          </div>
+
+          <form id="bankingForm" class="stack" novalidate>
+            <div class="field">
+              <label for="transferDate">Date</label>
+              <input id="transferDate" type="date" required />
+              <div class="help" data-help="transferDate"></div>
+            </div>
+
+            <div class="field">
+              <label for="transferType">Transfer Type</label>
+              <select id="transferType" required>
+                <option value="">Select…</option>
+                <option value="deposit">Deposit Cash to Bank</option>
+                <option value="withdrawal">Withdraw Cash from Bank</option>
+              </select>
+              <div class="help" data-help="transferType"></div>
+            </div>
+
+            <div class="field">
+              <label for="transferAmount">Amount</label>
+              <input id="transferAmount" type="number" inputmode="decimal" min="0" step="0.01" required />
+              <div class="help" data-help="transferAmount"></div>
+            </div>
+
+            <div class="field">
+              <label for="transferNotes">Notes</label>
+              <textarea id="transferNotes" rows="3" placeholder="Optional"></textarea>
+            </div>
+
+            <button class="btn primary" type="submit">Record Transfer</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Recent Transfers</h2>
+            <div class="muted small">History of deposits/withdrawals</div>
+          </div>
+          <div id="transferTable" class="table-wrap"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
