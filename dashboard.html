@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard — CBT Finance</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body data-page="dashboard">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
+          <div>
+            <div class="sidebar-title">Chosen Bride</div>
+            <div class="sidebar-subtitle">Finance System</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link active" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="income.html">Income</a>
+        <a class="nav-link" href="expenses.html">Expenses</a>
+        <a class="nav-link" href="payouts.html">Payouts</a>
+        <a class="nav-link" href="reports.html">Reports</a>
+        <a class="nav-link" href="settings.html">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn subtle" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-actions">
+        <button class="btn subtle" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="summary-bar">
+        <div class="segmented" role="group" aria-label="Date filter">
+          <button class="seg" type="button" data-range="today">Today</button>
+          <button class="seg" type="button" data-range="week">This Week</button>
+          <button class="seg active" type="button" data-range="month">This Month</button>
+          <button class="seg" type="button" data-range="custom">Custom</button>
+        </div>
+
+        <div class="range-inputs" id="customRange" hidden>
+          <div class="inline-field">
+            <label class="sr-only" for="fromDate">From</label>
+            <input id="fromDate" type="date" />
+          </div>
+          <div class="inline-field">
+            <label class="sr-only" for="toDate">To</label>
+            <input id="toDate" type="date" />
+          </div>
+          <button class="btn" id="applyCustomRange" type="button">Apply</button>
+        </div>
+      </section>
+
+      <section class="grid cards-3">
+        <div class="card">
+          <div class="card-label">Total Income (selected)</div>
+          <div class="card-value" id="totalIncome">—</div>
+          <div class="muted small" id="incomeCount">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Total Expenses (selected)</div>
+          <div class="card-value" id="totalExpenses">—</div>
+          <div class="muted small" id="expenseCount">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Net Balance</div>
+          <div class="card-value" id="netBalance">—</div>
+          <div class="muted small" id="netHint">Income − Expenses</div>
+        </div>
+      </section>
+
+      <section class="grid cards-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Breakdown by Category</h2>
+            <div class="muted small">Income categories</div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="categoryChart" height="120"></canvas>
+          </div>
+          <div class="hr"></div>
+          <div id="categoryBreakdown" class="list"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Recent Transactions</h2>
+            <div class="muted small">Last 10 entries (income/expenses/payouts)</div>
+          </div>
+          <div id="recentTransactions" class="table-wrap"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

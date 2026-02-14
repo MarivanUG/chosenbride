@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings — CBT Finance</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="settings">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
+          <div>
+            <div class="sidebar-title">Chosen Bride</div>
+            <div class="sidebar-subtitle">Finance System</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="income.html">Income</a>
+        <a class="nav-link" href="expenses.html">Expenses</a>
+        <a class="nav-link" href="payouts.html">Payouts</a>
+        <a class="nav-link" href="reports.html">Reports</a>
+        <a class="nav-link active" href="settings.html">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn subtle" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+      <div class="topbar-title">Settings</div>
+      <div class="topbar-actions">
+        <button class="btn subtle" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="grid cards-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Security</h2>
+            <div class="muted small">Change password & inactivity timeout</div>
+          </div>
+
+          <form id="passwordForm" class="stack" novalidate>
+            <div class="field">
+              <label for="oldPassword">Current password</label>
+              <input id="oldPassword" type="password" autocomplete="current-password" required />
+              <div class="help" data-help="oldPassword"></div>
+            </div>
+            <div class="field">
+              <label for="newPassword">New password</label>
+              <input id="newPassword" type="password" autocomplete="new-password" minlength="6" required />
+              <div class="help" data-help="newPassword"></div>
+            </div>
+            <div class="field">
+              <label for="confirmPassword">Confirm new password</label>
+              <input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required />
+              <div class="help" data-help="confirmPassword"></div>
+            </div>
+            <button class="btn primary" type="submit">Update Password</button>
+          </form>
+
+          <div class="hr"></div>
+
+          <form id="timeoutForm" class="stack" novalidate>
+            <div class="field">
+              <label for="idleMinutes">Auto logout after inactivity (minutes)</label>
+              <input id="idleMinutes" type="number" min="1" step="1" required />
+              <div class="muted small">Default is 10 minutes.</div>
+            </div>
+            <button class="btn" type="submit">Save Timeout</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Data Backup & Restore</h2>
+            <div class="muted small">Very important — keep backups safe</div>
+          </div>
+
+          <div class="stack">
+            <button class="btn" id="exportJson" type="button">Export All Data (JSON)</button>
+
+            <div class="field">
+              <label for="importJson">Import JSON Backup</label>
+              <input id="importJson" type="file" accept="application/json" />
+              <div class="muted small">Import will overwrite current data.</div>
+            </div>
+
+            <button class="btn danger" id="clearAllData" type="button">Clear All Data</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid cards-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Categories</h2>
+            <div class="muted small">Customize categories for your church</div>
+          </div>
+
+          <div class="stack">
+            <div class="field">
+              <label for="incomeCategories">Income categories (one per line)</label>
+              <textarea id="incomeCategories" rows="8"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="expenseCategories">Expense categories (one per line)</label>
+              <textarea id="expenseCategories" rows="8"></textarea>
+            </div>
+
+            <button class="btn primary" id="saveCategories" type="button">Save Categories</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Budget Planning</h2>
+            <div class="muted small">Set monthly budgets per expense category</div>
+          </div>
+
+          <div class="toolbar wrap">
+            <div class="field minw-220">
+              <label class="sr-only" for="budgetMonth">Month</label>
+              <input id="budgetMonth" type="month" class="input" />
+            </div>
+            <button class="btn primary" id="saveBudget" type="button">Save Budget</button>
+            <button class="btn danger" id="clearBudget" type="button">Clear Budget (Month)</button>
+          </div>
+
+          <div class="hr"></div>
+          <div id="budgetEditor" class="table-wrap"></div>
+          <div class="muted small mt-10">
+            Tip: Budgets are used on the Expenses page to highlight overspending.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">About</h2>
+            <div class="muted small">System info & audit</div>
+          </div>
+          <div class="list">
+            <div class="list-row">
+              <div>App</div>
+              <div class="muted">CBT Finance (static)</div>
+            </div>
+            <div class="list-row">
+              <div>Storage</div>
+              <div class="muted">LocalStorage</div>
+            </div>
+            <div class="list-row">
+              <div>Audit log</div>
+              <div class="muted"><button class="btn" id="exportAudit" type="button">Export Audit CSV</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

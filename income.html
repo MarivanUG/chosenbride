@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Income — CBT Finance</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="income">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
+          <div>
+            <div class="sidebar-title">Chosen Bride</div>
+            <div class="sidebar-subtitle">Finance System</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="income.html">Income</a>
+        <a class="nav-link" href="expenses.html">Expenses</a>
+        <a class="nav-link" href="payouts.html">Payouts</a>
+        <a class="nav-link" href="reports.html">Reports</a>
+        <a class="nav-link" href="settings.html">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn subtle" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+      <div class="topbar-title">Income / Collections</div>
+      <div class="topbar-actions">
+        <button class="btn subtle" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="grid cards-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Record Collection</h2>
+            <div class="muted small">Enter one income record</div>
+          </div>
+          <form id="incomeForm" class="stack" novalidate>
+            <input type="hidden" id="incomeId" />
+            <div class="grid form-2">
+              <div class="field">
+                <label for="incomeDate">Date</label>
+                <input id="incomeDate" type="date" required />
+                <div class="help" data-help="incomeDate"></div>
+              </div>
+              <div class="field">
+                <label for="serviceType">Service Type</label>
+                <select id="serviceType" required>
+                  <option value="">Select…</option>
+                  <option>Sunday Service</option>
+                  <option>Midweek Service</option>
+                  <option>Special Service</option>
+                  <option>Conference</option>
+                  <option>Other</option>
+                </select>
+                <div class="help" data-help="serviceType"></div>
+              </div>
+              <div class="field">
+                <label for="incomeCategory">Income Category</label>
+                <select id="incomeCategory" required></select>
+                <div class="help" data-help="incomeCategory"></div>
+              </div>
+              <div class="field">
+                <label for="incomeAmount">Amount</label>
+                <input id="incomeAmount" type="number" inputmode="decimal" min="0" step="0.01" required />
+                <div class="help" data-help="incomeAmount"></div>
+              </div>
+              <div class="field">
+                <label for="incomeMethod">Payment Method</label>
+                <select id="incomeMethod" required>
+                  <option value="">Select…</option>
+                  <option>Cash</option>
+                  <option>Mobile Money</option>
+                  <option>Bank Transfer</option>
+                </select>
+                <div class="help" data-help="incomeMethod"></div>
+              </div>
+              <div class="field">
+                <label for="incomeRecordedBy">Recorded by</label>
+                <input id="incomeRecordedBy" type="text" placeholder="e.g., Treasurer" required />
+                <div class="help" data-help="incomeRecordedBy"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="incomeNotes">Notes</label>
+              <textarea id="incomeNotes" rows="3" placeholder="Optional"></textarea>
+            </div>
+
+            <div class="row">
+              <button class="btn primary" type="submit" id="incomeSaveBtn">Save Income</button>
+              <button class="btn" type="button" id="incomeCancelEdit" hidden>Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Totals by Category</h2>
+            <div class="muted small">Filtered by current view</div>
+          </div>
+          <div class="toolbar">
+            <input id="incomeSearch" class="input" type="search" placeholder="Search…" />
+            <select id="incomeFilterCategory" class="input"></select>
+            <button class="btn" id="incomeExportCsv" type="button">Export CSV</button>
+          </div>
+          <div class="hr"></div>
+          <div id="incomeTotals" class="list"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2 class="h3">Income Records</h2>
+          <div class="muted small">Edit / delete, search & filter</div>
+        </div>
+
+        <div class="toolbar">
+          <div class="segmented" role="group" aria-label="Date filter">
+            <button class="seg active" type="button" data-range="month">This Month</button>
+            <button class="seg" type="button" data-range="today">Today</button>
+            <button class="seg" type="button" data-range="week">This Week</button>
+            <button class="seg" type="button" data-range="custom">Custom</button>
+          </div>
+          <div class="range-inputs" id="incomeCustomRange" hidden>
+            <input id="incomeFrom" type="date" />
+            <input id="incomeTo" type="date" />
+            <button class="btn" id="incomeApplyRange" type="button">Apply</button>
+          </div>
+        </div>
+
+        <div id="incomeTable" class="table-wrap"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

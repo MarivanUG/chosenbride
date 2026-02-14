@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payouts — CBT Finance</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="payouts">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
+          <div>
+            <div class="sidebar-title">Chosen Bride</div>
+            <div class="sidebar-subtitle">Finance System</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="income.html">Income</a>
+        <a class="nav-link" href="expenses.html">Expenses</a>
+        <a class="nav-link active" href="payouts.html">Payouts</a>
+        <a class="nav-link" href="reports.html">Reports</a>
+        <a class="nav-link" href="settings.html">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn subtle" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+      <div class="topbar-title">Payouts / Leaders Support</div>
+      <div class="topbar-actions">
+        <button class="btn subtle" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="grid cards-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Record Payout</h2>
+            <div class="muted small">Payments to leaders/support teams</div>
+          </div>
+
+          <form id="payoutForm" class="stack" novalidate>
+            <input type="hidden" id="payoutId" />
+            <div class="grid form-2">
+              <div class="field">
+                <label for="payoutDate">Date</label>
+                <input id="payoutDate" type="date" required />
+                <div class="help" data-help="payoutDate"></div>
+              </div>
+
+              <div class="field">
+                <label for="leaderRole">Role</label>
+                <select id="leaderRole" required>
+                  <option value="">Select…</option>
+                  <option>Pastor</option>
+                  <option>Associate Pastor</option>
+                  <option>Worship Leader</option>
+                  <option>Media Team</option>
+                  <option>Other Church Leaders</option>
+                </select>
+                <div class="help" data-help="leaderRole"></div>
+              </div>
+
+              <div class="field">
+                <label for="leaderName">Leader Name</label>
+                <input id="leaderName" type="text" required />
+                <div class="help" data-help="leaderName"></div>
+              </div>
+
+              <div class="field">
+                <label for="payoutAmount">Amount</label>
+                <input id="payoutAmount" type="number" inputmode="decimal" min="0" step="0.01" required />
+                <div class="help" data-help="payoutAmount"></div>
+              </div>
+
+              <div class="field">
+                <label for="payoutMethod">Payment Method</label>
+                <select id="payoutMethod" required>
+                  <option value="">Select…</option>
+                  <option>Cash</option>
+                  <option>Mobile Money</option>
+                  <option>Bank Transfer</option>
+                </select>
+                <div class="help" data-help="payoutMethod"></div>
+              </div>
+
+              <div class="field">
+                <label for="payoutApprovedBy">Approved By</label>
+                <input id="payoutApprovedBy" type="text" required />
+                <div class="help" data-help="payoutApprovedBy"></div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="payoutReason">Reason</label>
+              <textarea id="payoutReason" rows="3" required></textarea>
+              <div class="help" data-help="payoutReason"></div>
+            </div>
+
+            <div class="row">
+              <button class="btn primary" type="submit" id="payoutSaveBtn">Save Payout</button>
+              <button class="btn" type="button" id="payoutCancelEdit" hidden>Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Monthly Summary per Leader</h2>
+            <div class="muted small">Printable payout summary</div>
+          </div>
+
+          <div class="toolbar">
+            <input id="payoutSearch" class="input" type="search" placeholder="Search leader/role…" />
+            <button class="btn" id="payoutPrintSummary" type="button">Print Summary</button>
+            <button class="btn" id="payoutExportCsv" type="button">Export CSV</button>
+          </div>
+
+          <div class="hr"></div>
+          <div id="payoutMonthlySummary" class="table-wrap"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2 class="h3">Payout Records</h2>
+          <div class="muted small">Edit / delete, filter by date</div>
+        </div>
+
+        <div class="toolbar">
+          <div class="segmented" role="group" aria-label="Date filter">
+            <button class="seg active" type="button" data-range="month">This Month</button>
+            <button class="seg" type="button" data-range="today">Today</button>
+            <button class="seg" type="button" data-range="week">This Week</button>
+            <button class="seg" type="button" data-range="custom">Custom</button>
+          </div>
+          <div class="range-inputs" id="payoutCustomRange" hidden>
+            <input id="payoutFrom" type="date" />
+            <input id="payoutTo" type="date" />
+            <button class="btn" id="payoutApplyRange" type="button">Apply</button>
+          </div>
+        </div>
+
+        <div id="payoutTable" class="table-wrap"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

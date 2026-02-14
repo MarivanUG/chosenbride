@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Expenses — CBT Finance</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="expenses">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
+          <div>
+            <div class="sidebar-title">Chosen Bride</div>
+            <div class="sidebar-subtitle">Finance System</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="income.html">Income</a>
+        <a class="nav-link active" href="expenses.html">Expenses</a>
+        <a class="nav-link" href="payouts.html">Payouts</a>
+        <a class="nav-link" href="reports.html">Reports</a>
+        <a class="nav-link" href="settings.html">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn subtle" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+      <div class="topbar-title">Expense Management</div>
+      <div class="topbar-actions">
+        <button class="btn subtle" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="grid cards-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Record Expense</h2>
+            <div class="muted small">Receipt upload is stored locally</div>
+          </div>
+
+          <form id="expenseForm" class="stack" novalidate>
+            <input type="hidden" id="expenseId" />
+            <div class="grid form-2">
+              <div class="field">
+                <label for="expenseDate">Date</label>
+                <input id="expenseDate" type="date" required />
+                <div class="help" data-help="expenseDate"></div>
+              </div>
+
+              <div class="field">
+                <label for="expenseCategory">Expense Category</label>
+                <select id="expenseCategory" required></select>
+                <div class="help" data-help="expenseCategory"></div>
+              </div>
+
+              <div class="field">
+                <label for="expenseAmount">Amount</label>
+                <input id="expenseAmount" type="number" inputmode="decimal" min="0" step="0.01" required />
+                <div class="help" data-help="expenseAmount"></div>
+              </div>
+
+              <div class="field">
+                <label for="expensePaidTo">Paid To</label>
+                <input id="expensePaidTo" type="text" required />
+                <div class="help" data-help="expensePaidTo"></div>
+              </div>
+
+              <div class="field">
+                <label for="expenseMethod">Payment Method</label>
+                <select id="expenseMethod" required>
+                  <option value="">Select…</option>
+                  <option>Cash</option>
+                  <option>Mobile Money</option>
+                  <option>Bank Transfer</option>
+                </select>
+                <div class="help" data-help="expenseMethod"></div>
+              </div>
+
+              <div class="field">
+                <label for="expenseApprovedBy">Approved By</label>
+                <input id="expenseApprovedBy" type="text" required />
+                <div class="help" data-help="expenseApprovedBy"></div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="expenseDescription">Description</label>
+              <textarea id="expenseDescription" rows="3" required></textarea>
+              <div class="help" data-help="expenseDescription"></div>
+            </div>
+
+            <div class="field">
+              <label for="expenseReceipt">Receipt Upload (optional)</label>
+              <input id="expenseReceipt" type="file" accept="image/*,application/pdf" />
+              <div class="muted small" id="receiptHint">Stored as Base64 in your browser.</div>
+              <div class="receipt-preview" id="receiptPreview" hidden></div>
+            </div>
+
+            <div class="row">
+              <button class="btn primary" type="submit" id="expenseSaveBtn">Save Expense</button>
+              <button class="btn" type="button" id="expenseCancelEdit" hidden>Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h3">Monthly Budget Comparison</h2>
+            <div class="muted small">Budgeted vs Actual (this month)</div>
+          </div>
+          <div class="toolbar">
+            <select id="expenseFilterCategory" class="input"></select>
+            <input id="expenseSearch" class="input" type="search" placeholder="Search…" />
+            <button class="btn" id="expenseExportCsv" type="button">Export CSV</button>
+          </div>
+          <div class="hr"></div>
+          <div id="budgetComparison" class="table-wrap"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2 class="h3">Expense Records</h2>
+          <div class="muted small">Edit / delete, filters & monthly totals</div>
+        </div>
+
+        <div class="toolbar">
+          <div class="segmented" role="group" aria-label="Date filter">
+            <button class="seg active" type="button" data-range="month">This Month</button>
+            <button class="seg" type="button" data-range="today">Today</button>
+            <button class="seg" type="button" data-range="week">This Week</button>
+            <button class="seg" type="button" data-range="custom">Custom</button>
+          </div>
+          <div class="range-inputs" id="expenseCustomRange" hidden>
+            <input id="expenseFrom" type="date" />
+            <input id="expenseTo" type="date" />
+            <button class="btn" id="expenseApplyRange" type="button">Apply</button>
+          </div>
+        </div>
+
+        <div id="expenseMonthlyTotals" class="list"></div>
+        <div class="hr"></div>
+        <div id="expenseTable" class="table-wrap"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

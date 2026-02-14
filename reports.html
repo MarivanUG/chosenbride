@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reports — CBT Finance</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="reports">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
+          <div>
+            <div class="sidebar-title">Chosen Bride</div>
+            <div class="sidebar-subtitle">Finance System</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="income.html">Income</a>
+        <a class="nav-link" href="expenses.html">Expenses</a>
+        <a class="nav-link" href="payouts.html">Payouts</a>
+        <a class="nav-link active" href="reports.html">Reports</a>
+        <a class="nav-link" href="settings.html">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn subtle" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+      <div class="topbar-title">Reports</div>
+      <div class="topbar-actions">
+        <button class="btn subtle" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="card">
+        <div class="card-header">
+          <h2 class="h3">Generate Report</h2>
+          <div class="muted small">Date range + export / print</div>
+        </div>
+
+        <div class="toolbar wrap">
+          <select id="reportType" class="input">
+            <option value="monthlyStatement">Monthly financial statement</option>
+            <option value="incomeStatement">Income statement</option>
+            <option value="expenseReport">Expense report</option>
+            <option value="categoryBreakdown">Category breakdown</option>
+            <option value="leaderPayouts">Leader payout report</option>
+          </select>
+
+          <div class="inline-field">
+            <label class="sr-only" for="reportFrom">From</label>
+            <input id="reportFrom" type="date" />
+          </div>
+          <div class="inline-field">
+            <label class="sr-only" for="reportTo">To</label>
+            <input id="reportTo" type="date" />
+          </div>
+
+          <button class="btn" id="runReport" type="button">Run</button>
+          <button class="btn" id="exportReportCsv" type="button">Export CSV</button>
+          <button class="btn" id="printReport" type="button">Print</button>
+        </div>
+
+        <div class="hr"></div>
+        <div id="reportOutput" class="report"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalRoot" class="modal-root" aria-hidden="true"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
