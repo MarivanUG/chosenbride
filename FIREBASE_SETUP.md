@@ -51,3 +51,29 @@ To enable real-time synchronization where data appears instantly on all devices,
     *   **Code Update Required:** The file `js/storage.js` currently uses `localStorage`. It must be rewritten to read/write from `window.firebaseCtx.db` (Firestore) instead.
 
 3.  The system is designed to detect this config... (Future Implementation)
+
+---
+
+## ⚠️ Important: "Test Mode" Expiration
+
+If you selected **Test Mode** when creating your database, it will **stop working after 30 days**.
+
+### How to fix it (Make it permanent):
+1.  Go to the [Firebase Console](https://console.firebase.google.com/).
+2.  Open your project > **Firestore Database**.
+3.  Click the **Rules** tab.
+4.  Delete the existing code and paste this instead:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /finance_data/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+5. Click **Publish**.
+
+**Note:** This makes your database publicly accessible to anyone with your config. Since your app handles encryption/passwords internally, this is a basic "Open" setup. For higher security, we would need to implement Firebase Authentication login in the code.
