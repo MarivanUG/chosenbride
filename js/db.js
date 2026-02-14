@@ -9,7 +9,6 @@ window.CBTCloud = {
   // Download data from Cloud -> LocalStorage
   syncDown: async function() {
     try {
-      console.log('☁️ Checking cloud data...');
       const docRef = doc(db, COLLECTION, DOC_ID);
       const docSnap = await getDoc(docRef);
 
@@ -19,14 +18,11 @@ window.CBTCloud = {
         // In a complex app, we'd merge. Here we overwrite local to ensure consistency across devices.
         if (cloudData.payload) {
           localStorage.setItem('CBT_FMS_V1', cloudData.payload);
-          console.log('✅ Cloud data loaded to device.');
           return true; // Data found and loaded
         }
-      } else {
-        console.log('☁️ No cloud data found. Using local data.');
       }
     } catch (error) {
-      console.error('❌ Cloud Sync Error:', error);
+      console.error('Cloud Sync Error:', error);
       // Fallback: Use local data if offline or error
     }
     return false;
@@ -44,9 +40,8 @@ window.CBTCloud = {
         updatedAt: new Date().toISOString(),
         updatedBy: 'user' // Could use auth username if available
       });
-      console.log('☁️ Data saved to cloud.');
     } catch (error) {
-      console.error('❌ Cloud Save Error:', error);
+      console.error('Cloud Save Error:', error);
     }
   }
 };

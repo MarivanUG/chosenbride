@@ -25,4 +25,3 @@ export { app, analytics, auth, db };
 
 // Global exposure for debugging
 window.firebaseCtx = { app, auth, db };
-console.log('Firebase Configuration Loaded');
