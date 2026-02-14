@@ -92,6 +92,10 @@
 
   function saveState(state){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    // Trigger Cloud Sync if available
+    if(window.CBTCloud && typeof window.CBTCloud.syncUp === 'function'){
+      window.CBTCloud.syncUp();
+    }
   }
 
   function update(mutator){

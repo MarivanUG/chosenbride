@@ -1786,6 +1786,13 @@
       banking: initBanking
     };
 
+    // Attempt cloud sync before render
+    if(window.CBTCloud && window.CBTCloud.syncDown){
+      try {
+        await window.CBTCloud.syncDown();
+      } catch(e) { console.error('Cloud load failed', e); }
+    }
+
     const fn = routes[page];
     if(typeof fn === 'function') fn();
   });
