@@ -357,7 +357,7 @@
     $('#loginHelpBtn')?.addEventListener('click', ()=>{
       confirmModal({
         title: 'Why is my data missing?',
-        message: 'This app saves data on your device (Local Storage), not on the internet.\n\nIf you added data on your PC, it will not appear on your Phone automatically.\n\nTo Sync:\n1. On PC: Go to Settings > Data Sync > Export.\n2. Send the file to your Phone.\n3. On Phone: Go to Settings > Data Sync > Import.',
+        message: 'This app automatically syncs data to the cloud (Firebase) when you save records, and loads it back whenever you log in on any device.\n\nIf data appears missing:\n• Check your internet connection — cloud sync requires it.\n• Try logging out and back in to force a fresh cloud sync.\n• If you just saved data, wait a moment and refresh.\n\nNote: Data is also backed up locally on your device, so it remains available offline.',
         confirmText: 'Understood'
       });
     });
@@ -1767,6 +1767,29 @@
 
   // ---------- Boot ----------
 
+  // db.js is a type="module" script that fetches Firebase from CDN asynchronously.
+  // It dispatches 'cbt-cloud-ready' when window.CBTCloud is available.
+  // We must wait for this event (with a timeout fallback) before attempting syncDown(),
+  // otherwise the DOMContentLoaded handler races ahead before Firebase finishes loading,
+  // window.CBTCloud is still undefined, and syncDown() is silently skipped — causing
+  // data loaded from Firestore to be lost and the app to start with stale localStorage.
+  const cloudReadyPromise = new Promise((resolve)=>{
+    // Already set (e.g. module loaded synchronously in some environments)
+    if(window.CBTCloud){
+      resolve();
+      return;
+    }
+    // Timeout fallback: if Firebase never loads (offline / CDN failure), don't hang the UI
+    const timer = setTimeout(()=>{
+      console.warn('CBTCloud not ready after 6s — proceeding with local data.');
+      resolve();
+    }, 6000);
+    window.addEventListener('cbt-cloud-ready', ()=>{
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+  });
+
   document.addEventListener('DOMContentLoaded', async ()=>{
     const page = document.body?.dataset?.page || '';
 
@@ -1786,10 +1809,22 @@
       banking: initBanking
     };
 
-    // Attempt cloud sync before render
-    if(window.CBTCloud && window.CBTCloud.syncDown){
+    // Wait for db.js / Firebase module to finish loading before attempting cloud sync.
+    // Without this await, the race condition causes syncDown() to be skipped silently.
+    await cloudReadyPromise;
+
+    // Only sync down ONCE per browser session (on the first page load after opening the app).
+    // syncDown uses a "cloud wins" strategy — it overwrites localStorage with Firestore data.
+    // Calling it on every page navigation is dangerous: syncUp() is fire-and-forget, so if a
+    // user saves data and navigates before syncUp reaches Firestore, the next page's syncDown
+    // would overwrite localStorage with the old cloud data, silently discarding the new entry.
+    const SESSION_SYNCED_KEY = 'CBT_SESSION_SYNCED';
+    const syncedThisSession = sessionStorage.getItem(SESSION_SYNCED_KEY) === '1';
+
+    if(!syncedThisSession && window.CBTCloud && window.CBTCloud.syncDown){
       try {
         await window.CBTCloud.syncDown();
+        sessionStorage.setItem(SESSION_SYNCED_KEY, '1');
       } catch(e) { console.error('Cloud load failed', e); }
     }
 

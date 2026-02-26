@@ -42,6 +42,8 @@
 
   function logout(){
     CBTStorage.clearSession();
+    // Clear the session-sync flag so the next login triggers a fresh syncDown from Firestore.
+    sessionStorage.removeItem('CBT_SESSION_SYNCED');
   }
 
   function getCurrentUser(){
