@@ -3,45 +3,68 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login — CBT Finance</title>
+  <title>Sign In — Chosen Bride Tabernacle Finance</title>
   <meta name="description" content="Login to Chosen Bride Tabernacle Financial Management System" />
   <link rel="icon" type="image/png" href="images/logo.png" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body data-page="login">
-  <main class="center-page">
-    <div class="card auth-card">
-      <div class="brand">
-        <img class="brand-logo" src="images/logo.png" alt="Chosen Bride Logo" />
-        <div>
-          <h1 class="h2">Church Finance</h1>
-          <p class="muted">Chosen Bride Tabernacle</p>
-        </div>
+
+  <div class="login-page">
+
+    <!-- ── Left: Branded panel ── -->
+    <div class="login-panel-brand">
+      <img class="login-brand-logo" src="images/logo.png" alt="Chosen Bride Tabernacle Logo" />
+      <h1 class="login-brand-title">Chosen Bride<br>Tabernacle</h1>
+      <p class="login-brand-sub">Financial Management System</p>
+      <div class="login-brand-verse">
+        <em>"Bring the whole tithe into the storehouse, that there may be food in my house."</em><br>
+        <strong>— Malachi 3:10</strong>
       </div>
-
-      <form id="loginForm" class="stack" novalidate>
-        <div class="field">
-          <label for="username">Username</label>
-          <input id="username" name="username" type="text" autocomplete="username" required />
-          <div class="help" data-help="username"></div>
-        </div>
-
-        <div class="field">
-          <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required />
-          <div class="help" data-help="password"></div>
-        </div>
-
-        <button class="btn primary" type="submit">Sign in</button>
-      </form>
-
-      <div class="hr"></div>
-      <div class="muted small" style="text-align: center;">
-        <div>Data is stored on this device.</div>
-        <button class="btn subtle small mt-10" id="loginHelpBtn" type="button">Why isn't my password working?</button>
+      <div class="login-brand-dots">
+        <span></span><span></span><span></span>
       </div>
     </div>
-  </main>
+
+    <!-- ── Right: Login form ── -->
+    <div class="login-panel-form">
+      <div class="login-form-wrap">
+
+        <div class="login-form-header">
+          <h2 class="login-form-title">Welcome back</h2>
+          <p class="login-form-sub">Sign in to your account to continue</p>
+        </div>
+
+        <form id="loginForm" class="stack" novalidate>
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text"
+              autocomplete="username" placeholder="Enter your username" required />
+            <div class="help" data-help="username"></div>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="pw-field">
+              <input id="password" name="password" type="password"
+                autocomplete="current-password" placeholder="Enter your password" required />
+              <button class="pw-toggle" type="button" id="pwToggle" aria-label="Show or hide password">👁</button>
+            </div>
+            <div class="help" data-help="password"></div>
+          </div>
+
+          <button class="btn primary lg full" type="submit" id="loginSubmitBtn">Sign in</button>
+        </form>
+
+        <div class="hr"></div>
+        <div style="text-align:center">
+          <button class="btn subtle sm" id="loginHelpBtn" type="button">Why is my data missing?</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
 
   <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
   <div id="modalRoot" class="modal-root" aria-hidden="true"></div>

@@ -26,8 +26,8 @@
 
   function formatMoney(amount){
     const state = CBTStorage.getState();
-    const currency = state.settings?.currency || 'GHS';
-    const locale = state.settings?.currencyLocale || 'en-GH';
+    const currency = state.settings?.currency || 'UGX';
+    const locale = state.settings?.currencyLocale || 'en-UG';
     try{
       return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(Number(amount || 0));
     }catch{
@@ -261,6 +261,33 @@
         toast('Theme', document.body.classList.contains('dark') ? 'Dark mode enabled.' : 'Dark mode disabled.');
       });
     }
+
+    // Inject cloud sync indicator pill into the topbar
+    const topbarActions = $('.topbar-actions');
+    if(topbarActions && !$('#syncIndicator')){
+      const syncEl = document.createElement('div');
+      syncEl.id = 'syncIndicator';
+      syncEl.className = 'sync-indicator';
+      syncEl.innerHTML = '<span class="sync-dot" id="syncDot"></span><span id="syncText">Synced</span>';
+      topbarActions.prepend(syncEl);
+
+      window.addEventListener('cbt-sync', (e)=>{
+        const dot = $('#syncDot');
+        const txt = $('#syncText');
+        if(!dot || !txt) return;
+        if(e.detail.status === 'syncing'){
+          dot.className = 'sync-dot syncing';
+          txt.textContent = 'Saving\u2026';
+        } else if(e.detail.status === 'synced'){
+          dot.className = 'sync-dot';
+          txt.textContent = 'Saved';
+          setTimeout(()=>{ if($('#syncText')) $('#syncText').textContent = 'Synced'; }, 2500);
+        } else if(e.detail.status === 'error'){
+          dot.className = 'sync-dot error';
+          txt.textContent = 'Offline';
+        }
+      });
+    }
   }
 
   // ---------- Data helpers ----------
@@ -362,6 +389,18 @@
       });
     });
 
+    // Password show/hide toggle
+    const pwToggle = $('#pwToggle');
+    const pwInput  = $('#password');
+    if(pwToggle && pwInput){
+      pwToggle.addEventListener('click', ()=>{
+        const show = pwInput.type === 'text';
+        pwInput.type = show ? 'password' : 'text';
+        pwToggle.textContent = show ? '\uD83D\uDC41' : '\uD83D\uDE48';
+        pwInput.focus();
+      });
+    }
+
     const form = $('#loginForm');
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();
@@ -376,10 +415,14 @@
       if(!ok) return;
 
       try{
+        const submitBtn = $('#loginSubmitBtn');
+        if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Signing in…'; }
         await CBTAuth.login(username, password);
         toast('Welcome', 'Login successful.');
         window.location.replace('dashboard.html');
       }catch(err){
+        const submitBtn = $('#loginSubmitBtn');
+        if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'Sign in'; }
         toast('Login failed', err.message || 'Unable to login.');
       }
     });
@@ -1793,22 +1836,6 @@
   document.addEventListener('DOMContentLoaded', async ()=>{
     const page = document.body?.dataset?.page || '';
 
-    // Ensure defaults exist for all pages
-    await CBTAuth.ensureDefaultAdmin();
-    applyDarkModeFromSettings();
-
-    const routes = {
-      index: initIndex,
-      login: initLogin,
-      dashboard: initDashboard,
-      income: initIncome,
-      expenses: initExpenses,
-      payouts: initPayouts,
-      reports: initReports,
-      settings: initSettings,
-      banking: initBanking
-    };
-
     // Wait for db.js / Firebase module to finish loading before attempting cloud sync.
     // Without this await, the race condition causes syncDown() to be skipped silently.
     await cloudReadyPromise;
@@ -1827,6 +1854,22 @@
         sessionStorage.setItem(SESSION_SYNCED_KEY, '1');
       } catch(e) { console.error('Cloud load failed', e); }
     }
+
+    // Ensure defaults exist for all pages
+    await CBTAuth.ensureDefaultAdmin();
+    applyDarkModeFromSettings();
+
+    const routes = {
+      index: initIndex,
+      login: initLogin,
+      dashboard: initDashboard,
+      income: initIncome,
+      expenses: initExpenses,
+      payouts: initPayouts,
+      reports: initReports,
+      settings: initSettings,
+      banking: initBanking
+    };
 
     const fn = routes[page];
     if(typeof fn === 'function') fn();

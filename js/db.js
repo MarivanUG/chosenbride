@@ -31,6 +31,7 @@ window.CBTCloud = {
   // Upload LocalStorage -> Cloud
   syncUp: async function() {
     try {
+      window.dispatchEvent(new CustomEvent('cbt-sync', { detail: { status: 'syncing' } }));
       const raw = localStorage.getItem('CBT_FMS_V1');
       if (!raw) return;
 
@@ -38,10 +39,12 @@ window.CBTCloud = {
       await setDoc(docRef, {
         payload: raw,
         updatedAt: new Date().toISOString(),
-        updatedBy: 'user' // Could use auth username if available
+        updatedBy: 'user'
       });
+      window.dispatchEvent(new CustomEvent('cbt-sync', { detail: { status: 'synced' } }));
     } catch (error) {
       console.error('Cloud Save Error:', error);
+      window.dispatchEvent(new CustomEvent('cbt-sync', { detail: { status: 'error' } }));
     }
   }
 };
